@@ -4,15 +4,19 @@ import authReducer from "./authReducer";
 import {
   REGISTRO_EXITOSO,
   REGISTRO_ERROR,
+  LOGIN_EXITOSO,
+  LOGIN_ERROR,
   LIMPIAR_ALERTA,
   USUARIOAUTENTICADO,
+  CERRAR_SESION
 } from "../../types/index";
 import clienteAxios from "../../config/axios";
+import tokenAuth from "../../config/tokenAuth";
 
 const AuthState = ({ children }) => {
   // State inicial
   const initialState = {
-    token: "",
+    token: typeof window !== "undefined" ? localStorage.getItem("token") : "",
     autenticado: null,
     usuario: null,
     mensaje: null,
@@ -23,7 +27,6 @@ const AuthState = ({ children }) => {
   const registrarUsuario = async (datos) => {
     try {
       const respuesta = await clienteAxios.post("api/usuarios", datos);
-      console.log(respuesta);
       dispatch({
         type: REGISTRO_EXITOSO,
         payload: respuesta.data.msg,
@@ -41,13 +44,53 @@ const AuthState = ({ children }) => {
       });
     }, 3000);
   };
-  // Usuario autenticado
-  const usuarioAutenticado = (nombre) => {
-    dispatch({
-      type: USUARIOAUTENTICADO,
-      payload: nombre,
-    });
+  // Autenticar usuario
+  const iniciarSesion = async (data) => {
+    try {
+      const respuesta = await clienteAxios.post("api/auth", data);
+      dispatch({
+        type: LOGIN_EXITOSO,
+        payload: respuesta.data.token,
+      });
+    } catch (error) {
+      dispatch({
+        type: LOGIN_ERROR,
+        payload: error.response.data.msg,
+      });
+    }
+    // Limpia la alerta despues de 3 segundos
+    setTimeout(() => {
+      dispatch({
+        type: LIMPIAR_ALERTA,
+      });
+    }, 3000);
   };
+
+  // Usuario autenticado
+  const usuarioAutenticado = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      tokenAuth(token);
+    }
+    try {
+      const respuesta = await clienteAxios("api/auth");
+      dispatch({
+        type: USUARIOAUTENTICADO,
+        payload: respuesta.data.usuario,
+      });
+    } catch (error) {
+      dispatch({
+        type: LOGIN_ERROR,
+        payload: error.response.data.msg,
+      });
+    }
+  };
+  // Cerrar sesion
+  const cerrarSesion = () => {
+    dispatch({
+      type: CERRAR_SESION
+    });
+  }
 
   return (
     <authContext.Provider
@@ -57,7 +100,9 @@ const AuthState = ({ children }) => {
         usuario: state.usuario,
         mensaje: state.mensaje,
         registrarUsuario,
+        iniciarSesion,
         usuarioAutenticado,
+        cerrarSesion
       }}
     >
       {children}
