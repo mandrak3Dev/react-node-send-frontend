@@ -9,6 +9,9 @@ import {
   CREAR_ENLACE_ERROR,
   MOSTRAR_ALERTA,
   LIMPIAR_ALERTA,
+  LIMPIAR_STATE,
+  AGREGAR_PASSWORD,
+  AGREGAR_DESCARGAS,
 } from "../../types/index";
 import clienteAxios from "../../config/axios";
 
@@ -59,7 +62,6 @@ const AppState = ({ children }) => {
         payload: error.response.data.msg,
       });
     }
-    const resultado = await clienteAxios.post("/api/archivos", formData);
   };
   // Crear enlace
   const crearEnlace = async () => {
@@ -81,6 +83,26 @@ const AppState = ({ children }) => {
     }
   };
 
+  const limpiarState = () => {
+    dispatch({
+      type: LIMPIAR_STATE,
+    });
+  };
+  // Agregar password
+  const agregarPassword = (password) => {
+    dispatch({
+      type: AGREGAR_PASSWORD,
+      payload: password,
+    });
+  };
+  // Agregar # descargas
+  const agregarDescargas = (descargas) => {
+    dispatch({
+      type: AGREGAR_DESCARGAS,
+      payload: descargas,
+    });
+  };
+
   return (
     <appContext.Provider
       value={{
@@ -95,6 +117,9 @@ const AppState = ({ children }) => {
         mostrarAlerta,
         subirArchivos,
         crearEnlace,
+        limpiarState,
+        agregarPassword,
+        agregarDescargas,
       }}
     >
       {children}

@@ -6,6 +6,9 @@ import {
   CREAR_ENLACE_ERROR,
   MOSTRAR_ALERTA,
   LIMPIAR_ALERTA,
+  LIMPIAR_STATE,
+  AGREGAR_PASSWORD,
+  AGREGAR_DESCARGAS
 } from "../../types/index";
 
 export default (state, action) => {
@@ -43,6 +46,28 @@ export default (state, action) => {
         ...state,
         url: action.payload,
       };
+    case LIMPIAR_STATE:
+      return {
+        ...state,
+        mensaje_archivo: "",
+        nombre: "",
+        nombre_original: "",
+        cargando: false,
+        descargas: 1,
+        password: "",
+        autor: null,
+        url: "",
+      };
+    case AGREGAR_PASSWORD:
+      return {
+        ...state,
+        password: action.payload,
+      };
+    case AGREGAR_DESCARGAS:
+      return {
+        ...state,
+        descargas: action.payload
+      }
     default:
       return state;
   }

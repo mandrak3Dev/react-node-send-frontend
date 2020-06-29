@@ -15,7 +15,10 @@ const Index = () => {
   const { mensaje_archivo, url } = AppContext;
   // Extraer usuario autenticado del storage
   useEffect(() => {
-    usuarioAutenticado();
+    const token = localStorage.getItem('token');
+    if(token){
+      usuarioAutenticado();
+    }
   }, []);
   return (
     <Layout>
@@ -46,7 +49,7 @@ const Index = () => {
                   Compartir archivos de forma sencilla y privada
                 </h2>
                 <p className="text-lg leading-loose">
-                  <span className="text-red-500 font-bold">ReactNodeSend</span>
+                  <span className="text-red-500 font-bold">ReactNodeSend </span>
                   te permite compartir archivos con cifrado de extremo a extremo
                   y un archivo que es eliminado despues de ser descargado. Asi
                   que puedes mantener lo que compartes en privado y asegurarte
